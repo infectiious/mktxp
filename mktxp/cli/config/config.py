@@ -37,8 +37,8 @@ class MKTXPConfigKeys:
 	SSL_CERTIFICATE_VERIFY = 'ssl_certificate_verify'
 
 	FE_DHCP_KEY = 'dhcp'
-	FE_DHCP_LEASE_KEY = 'dhcp_lease'    
-	FE_DHCP_POOL_KEY = 'pool'    
+	FE_DHCP_LEASE_KEY = 'dhcp_lease'
+	FE_DHCP_POOL_KEY = 'pool'
 	FE_INTERFACE_KEY = 'interface'
 	FE_FIREWALL_KEY = 'firewall'
 	FE_MONITOR_KEY = 'monitor'
@@ -47,9 +47,10 @@ class MKTXPConfigKeys:
 	FE_WIRELESS_CLIENTS_KEY = 'wireless_clients'
 	FE_CAPSMAN_KEY = 'capsman'
 	FE_CAPSMAN_CLIENTS_KEY = 'capsman_clients'
+	FE_BANDWIDTH_TEST_KEY = 'bandwidth_test'
 
-	MKTXP_SOCKET_TIMEOUT = 'socket_timeout'    
-	MKTXP_SOCKET_TIMEOUT = 'socket_timeout'   
+	MKTXP_SOCKET_TIMEOUT = 'socket_timeout'
+	MKTXP_SOCKET_TIMEOUT = 'socket_timeout'
 	MKTXP_INITIAL_DELAY = 'initial_delay_on_failure'
 	MKTXP_MAX_DELAY = 'max_delay_on_failure'
 	MKTXP_INC_DIV = 'delay_inc_div'
@@ -75,14 +76,14 @@ class MKTXPConfigKeys:
 	DEFAULT_MKTXP_MAX_DELAY = 900
 	DEFAULT_MKTXP_INC_DIV = 5
 	DEFAULT_MKTXP_BANDWIDTH_TEST_INTERVAL = 420
-	DEFAULT_MKTXP_COLLECTORS = ['IdentityCollector', 'SystemResourceCollector', 'HealthCollector', 'DHCPCollector', 'PoolCollector', 
+	DEFAULT_MKTXP_COLLECTORS = ['IdentityCollector', 'SystemResourceCollector', 'HealthCollector', 'DHCPCollector', 'PoolCollector',
 								'InterfaceCollector', 'FirewallCollector', 'MonitorCollector', 'RouteCollector', 'WLANCollector', 'CapsmanCollector', 'MKTXPCollector']
 
-	BOOLEAN_KEYS = (ENABLED_KEY, SSL_KEY, NO_SSL_CERTIFICATE, SSL_CERTIFICATE_VERIFY, 
+	BOOLEAN_KEYS = (ENABLED_KEY, SSL_KEY, NO_SSL_CERTIFICATE, SSL_CERTIFICATE_VERIFY,
 					  FE_DHCP_KEY, FE_DHCP_LEASE_KEY, FE_DHCP_POOL_KEY, FE_INTERFACE_KEY, FE_FIREWALL_KEY,
 					  FE_MONITOR_KEY, FE_ROUTE_KEY, MKTXP_USE_COMMENTS_OVER_NAMES,
-					  FE_WIRELESS_KEY, FE_WIRELESS_CLIENTS_KEY, FE_CAPSMAN_KEY, FE_CAPSMAN_CLIENTS_KEY)
-	
+					  FE_WIRELESS_KEY, FE_WIRELESS_CLIENTS_KEY, FE_CAPSMAN_KEY, FE_CAPSMAN_CLIENTS_KEY, FE_BANDWIDTH_TEST_KEY)
+
 	STR_KEYS = (HOST_KEY, USER_KEY, PASSWD_KEY)
 	MKTXP_INT_KEYS = (PORT_KEY, MKTXP_SOCKET_TIMEOUT, MKTXP_INITIAL_DELAY, MKTXP_MAX_DELAY, MKTXP_INC_DIV, MKTXP_BANDWIDTH_TEST_INTERVAL)
 
@@ -97,7 +98,7 @@ class ConfigEntry:
 
 												 MKTXPConfigKeys.FE_DHCP_KEY, MKTXPConfigKeys.FE_DHCP_LEASE_KEY, MKTXPConfigKeys.FE_DHCP_POOL_KEY, MKTXPConfigKeys.FE_INTERFACE_KEY, MKTXPConfigKeys.FE_FIREWALL_KEY,
 												 MKTXPConfigKeys.FE_MONITOR_KEY, MKTXPConfigKeys.FE_ROUTE_KEY, MKTXPConfigKeys.FE_WIRELESS_KEY, MKTXPConfigKeys.FE_WIRELESS_CLIENTS_KEY,
-												 MKTXPConfigKeys.FE_CAPSMAN_KEY, MKTXPConfigKeys.FE_CAPSMAN_CLIENTS_KEY, MKTXPConfigKeys.MKTXP_USE_COMMENTS_OVER_NAMES
+												 MKTXPConfigKeys.FE_CAPSMAN_KEY, MKTXPConfigKeys.FE_CAPSMAN_CLIENTS_KEY, MKTXPConfigKeys.FE_BANDWIDTH_TEST_KEY, MKTXPConfigKeys.MKTXP_USE_COMMENTS_OVER_NAMES
 												 ])
 	MKTXPSystemEntry = namedtuple('MKTXPSystemEntry', [MKTXPConfigKeys.PORT_KEY, MKTXPConfigKeys.MKTXP_SOCKET_TIMEOUT,
 												  MKTXPConfigKeys.MKTXP_INITIAL_DELAY, MKTXPConfigKeys.MKTXP_MAX_DELAY,
@@ -207,7 +208,7 @@ class MKTXPConfigHandler:
 				config_entry_reader[key] = self.config[entry_name].as_bool(key)
 			else:
 				config_entry_reader[key] = False
-				write_needed = True # read from disk next time                
+				write_needed = True # read from disk next time
 
 		for key in MKTXPConfigKeys.STR_KEYS:
 			config_entry_reader[key] = self.config[entry_name][key]
@@ -217,7 +218,7 @@ class MKTXPConfigHandler:
 			config_entry_reader[MKTXPConfigKeys.PORT_KEY] = self.config[entry_name].as_int(MKTXPConfigKeys.PORT_KEY)
 		else:
 			config_entry_reader[MKTXPConfigKeys.PORT_KEY] = self._default_value_for_key(MKTXPConfigKeys.SSL_KEY, config_entry_reader[MKTXPConfigKeys.SSL_KEY])
-			write_needed = True # read from disk next time                
+			write_needed = True # read from disk next time
 
 		if write_needed:
 			self.config[entry_name] = config_entry_reader
@@ -235,19 +236,19 @@ class MKTXPConfigHandler:
 				system_entry_reader[key] = self._config[entry_name].as_int(key)
 			else:
 				system_entry_reader[key] = self._default_value_for_key(key)
-				write_needed = True # read from disk next time                
-			
+				write_needed = True # read from disk next time
+
 		# Collectors
 		if self._config[entry_name].get(MKTXPConfigKeys.MKTXP_COLLECTORS):
 			system_entry_reader[MKTXPConfigKeys.MKTXP_COLLECTORS] = self._config[entry_name][MKTXPConfigKeys.MKTXP_COLLECTORS]
 		else:
 			system_entry_reader[MKTXPConfigKeys.MKTXP_COLLECTORS] = self._default_value_for_key(MKTXPConfigKeys.MKTXP_COLLECTORS)
-			write_needed = True # read from disk next time 
+			write_needed = True # read from disk next time
 
 		if write_needed:
 			self._config[entry_name] = system_entry_reader
 			self._config.write()
-			
+
 		return system_entry_reader
 
 	def _default_value_for_key(self, key, value = None):
@@ -265,6 +266,3 @@ class MKTXPConfigHandler:
 
 # Simplest possible Singleton impl
 config_handler = MKTXPConfigHandler()
-
-
-
